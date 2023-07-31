@@ -5,12 +5,16 @@ interface LoginState {
   userId?: string;
   password?: string;
   isLoading: boolean;
+  isError: boolean;
+  errorMsg?: string;
 }
 export default function Login() {
   const [state, setState] = React.useState<LoginState>({
     userId: '',
     password: '',
     isLoading: false,
+    isError: false,
+    errorMsg: '',
   });
   const nav = useNavigate();
 
@@ -44,10 +48,15 @@ export default function Login() {
       })
       .catch((error) => {
         console.log('error in fetch - ', error);
-        setState((prevState) => ({ ...prevState, isLoading: false }));
+        setState((prevState) => ({
+          ...prevState,
+          isLoading: false,
+          isError: true,
+          errorMsg: JSON.stringify({ error }),
+        }));
       });
   };
-  const { userId, password, isLoading } = state;
+  const { userId, password, isLoading, isError, errorMsg } = state;
   return (
     <>
       <h1>App Title</h1>
@@ -74,6 +83,7 @@ export default function Login() {
       ) : (
         <button onClick={handleLoginClick}>Login</button>
       )}
+      {isError ? <div>{errorMsg}</div> : <></>}
     </>
   );
 }
